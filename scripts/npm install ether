@@ -1,0 +1,21 @@
+import { ethers } from "ethers";
+
+const provider = new ethers.providers.Web3Provider(window.ethereum);
+await provider.send("eth_requestAccounts", []);
+const signer = provider.getSigner();
+
+const stakingAddress = "0x..."; // deployed staking contract
+const stakingAbi = [ /* minimal ABI: stake, withdraw, getReward, balances, earned */ ];
+
+const staking = new ethers.Contract(stakingAddress, stakingAbi, signer);
+
+// stake 10 tokens (assumes token approval done)
+async function stake(amountStr) {
+  const decimals = 18;
+  const amount = ethers.utils.parseUnits(amountStr, decimals);
+  // ensure token is approved for staking contract first:
+  // tokenContract.approve(stakingAddress, amount)
+  const tx = await staking.stake(amount);
+  await tx.wait();
+  console.log("staked");
+}
